@@ -1,10 +1,14 @@
+
 var jeSlika = false;
+var jeYoutube = false;
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   var jeSlika = sporocilo.indexOf('<img') > -1;
+  var jeYoutube = sporocilo.indexOf('<iframe src="https://www.youtube.com/embed/') > -1;
   
-  if (jeSmesko || jeSlika) {
-    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/\&lt;img/gi, '<img').replace(/png\' \/\&gt;/gi, 'png\' />').replace(/px"\&gt;/gi, 'px">');
+  if (jeSmesko || jeSlika || jeYoutube) {
+   sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />').replace(/\&lt;iframe/gi, '<iframe').replace(/allowfullscreen\&gt;/gi, 'allowfullscreen>').replace(/\&lt;\/iframe&gt;/gi,'</iframe>').replace(/px"\&gt;/gi, 'px">');
+
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -19,7 +23,11 @@ function divElementHtmlTekst(sporocilo) {
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
+  sporocilo = dodajYoutube(sporocilo);
   sporocilo = dodajSlike(sporocilo);
+
+
+
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -165,17 +173,40 @@ function dodajSlike(vhodnoBesedilo){
   }
   vhodnoBesedilo = '';
   
-  for(var j=0; j<besede.length;j++){
-      if(j == 0 && besede.length != 1){
-        vhodnoBesedilo += besede[j];
-        vhodnoBesedilo += ' '; 
-      }else if(j == besede.length - 1 && besede.length != 1){
-        vhodnoBesedilo += besede[j];
-      }else if(j == besede.length - 1 && besede.length == 1){
-        vhodnoBesedilo = besede[j];
-      }else{
-        vhodnoBesedilo += besede[j];
-      }
+  for(var j=0; j < besede.length; j++){
+    if(besede.length == 1 || j == (besede.length - 1)){
+      vhodnoBesedilo += besede[j];
+    }else{
+      vhodnoBesedilo += besede[j];
+      vhodnoBesedilo += ' ';
+    }
+  }
+
+  return vhodnoBesedilo;
+}
+
+function dodajYoutube(vhodnoBesedilo){
+  var besede = vhodnoBesedilo.split(' ');
+  
+  for(var i=0; i < besede.length; i++){
+    var trenutnaBeseda = besede[i];
+    
+    if(trenutnaBeseda.substring(0, 32).toLowerCase() == "https://www.youtube.com/watch?v="){
+      var hash = besede[i];
+       hash = hash.replace('https://www.youtube.com/watch?v=', '');
+       
+       trenutnaBeseda += ' <iframe src="https://www.youtube.com/embed/' + hash + '" width="200" height="150" style="margin-left:20px" allowfullscreen></iframe>';
+       besede[i] = trenutnaBeseda;
+    }
+  }
+  vhodnoBesedilo = '';
+  for(var j=0; j < besede.length; j++){
+    if(besede.length == 1 || j == (besede.length - 1)){
+      vhodnoBesedilo += besede[j];
+    }else{
+      vhodnoBesedilo += besede[j];
+      vhodnoBesedilo += ' ';
+    }
   }
   return vhodnoBesedilo;
 }
