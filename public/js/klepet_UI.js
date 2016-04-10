@@ -210,3 +210,11 @@ function dodajYoutube(vhodnoBesedilo){
   }
   return vhodnoBesedilo;
 }
+
+  socket.on('dregljaj', function(){
+    $('#vsebina').jrumble();
+    $('#vsebina').trigger('startRumble');
+    setTimeout(function(){
+      $('#vsebina').trigger('stopRumble');
+    }, 1500);
+  });
