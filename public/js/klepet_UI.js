@@ -5,6 +5,7 @@ function divElementEnostavniTekst(sporocilo) {
   
   if (jeSmesko || jeYoutube) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />').replace(/\&lt;iframe/gi, '<iframe').replace(/allowfullscreen\&gt;/gi, 'allowfullscreen>').replace(/\&lt;\/iframe&gt;/gi,'</iframe>');
+   
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -140,14 +141,16 @@ function dodajYoutube(vhodnoBesedilo){
   
   for(var i=0; i < besede.length; i++){
     var trenutnaBeseda = besede[i];
+    
     if(trenutnaBeseda.substring(0, 32).toLowerCase() == "https://www.youtube.com/watch?v="){
       var hash = besede[i];
        hash = hash.replace('https://www.youtube.com/watch?v=', '');
+       
        trenutnaBeseda += ' <iframe src="https://www.youtube.com/embed/' + hash + '" width="200" height="150" style="margin-left:20px" allowfullscreen></iframe>';
-      besede[i] = trenutnaBeseda;
+       besede[i] = trenutnaBeseda;
     }
   }
-  for(var j=0; j < besede.length; j++){
+  /*for(var j=0; j < besede.length; j++){
     
      if(j == 0 && besede.length != 1){
         vhodnoBesedilo += besede[j];
@@ -159,6 +162,16 @@ function dodajYoutube(vhodnoBesedilo){
       }else{
         vhodnoBesedilo += besede[j];
       }
+  }*/
+  vhodnoBesedilo = '';
+  for(var j=0; j < besede.length; j++){
+    if(besede.length == 1 || j == (besede.length - 1)){
+      vhodnoBesedilo += besede[j];
+    }else{
+      vhodnoBesedilo += besede[j];
+      vhodnoBesedilo += ' ';
+    }
+    
   }
   return vhodnoBesedilo;
 }
